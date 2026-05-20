@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Voice Interview Widget</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #8b5cf6;
+      --primary-glow: rgba(139, 92, 246, 0.4);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.4);
+      --bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: transparent;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+    }
+
+    /* Pulse Visualizer Button */
+    .pulse-wrapper {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      cursor: pointer;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--primary);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .pulse-ring.active {
+      animation: pulse-ring-anim 2s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+    }
+
+    .pulse-ring.active:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+
+    .pulse-ring.active:nth-child(3) {
+      animation-delay: 1s;
+    }
+
+    .pulse-button {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--primary-glow);
+      color: white;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .pulse-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+
+    .pulse-button:active {
+      transform: scale(0.95);
+    }
+
+    .pulse-button.recording {
+      background: linear-gradient(135deg, #34d399, #059669);
+      box-shadow: 0 0 30px var(--success-glow);
+    }
+
+    .pulse-button svg {
+      width: 36px;
+      height: 36px;
+      fill: currentColor;
+      transition: transform 0.3s ease;
+    }
+
+    .pulse-button.recording svg {
+      transform: scale(0.9);
+    }
+
+    @keyframes pulse-ring-anim {
+      0% {
+        transform: scale(0.6);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(1.6);
+        opacity: 0;
+      }
+    }
+
+    /* Controller Header */
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      border-color: transparent;
+    }
+
+    .btn-primary:hover {
+      background: #7c3aed;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    /* Display Info */
+    .status-text {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin: 8px 0;
+      text-align: center;
+      min-height: 22px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .status-text.recording {
+      color: var(--success);
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .transcript-box {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 80px;
+      max-height: 140px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      font-size: 15px;
+      line-height: 1.5;
+      text-align: left;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .transcript-box.active {
+      color: var(--text);
+      border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+    }
+
+    .transcript-placeholder {
+      font-style: italic;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="widget-container">
+    <div class="controls">
+      <button class="btn" id="btn-replay">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        Replay Question
+      </button>
+    </div>
+
+    <div class="pulse-wrapper" id="mic-trigger">
+      <div class="pulse-ring" id="ring-1"></div>
+      <div class="pulse-ring" id="ring-2"></div>
+      <div class="pulse-ring" id="ring-3"></div>
+      <button class="pulse-button" id="btn-mic">
+        <svg viewBox="0 0 24 24" id="svg-mic">
+          <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" />
+        </svg>
+        <svg viewBox="0 0 24 24" id="svg-stop" style="display: none;">
+          <path d="M18,18H6V6H18V18Z" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="status-text" id="status-display">Click the microphone to start answering</div>
+
+    <div class="transcript-box" id="transcript-display">
+      <span class="transcript-placeholder">Your speech transcript will appear here in real-time...</span>
+    </div>
+  </div>
+
+  <script>
+    // State Variables
+    let question = "";
+    let isRecording = false;
+    let recognition = null;
+    let spokenQuestions = new Set();
+    
+    // Voice metrics tracking
+    let speechStartTime = 0;
+    let confidenceSum = 0;
+    let confidenceCount = 0;
+    let finalTranscript = "";
+
+    // DOM Elements
+    const btnMic = document.getElementById("btn-mic");
+    const micTrigger = document.getElementById("mic-trigger");
+    const svgMic = document.getElementById("svg-mic");
+    const svgStop = document.getElementById("svg-stop");
+    const ring1 = document.getElementById("ring-1");
+    const ring2 = document.getElementById("ring-2");
+    const ring3 = document.getElementById("ring-3");
+    const btnReplay = document.getElementById("btn-replay");
+    const statusDisplay = document.getElementById("status-display");
+    const transcriptDisplay = document.getElementById("transcript-display");
+    const container = document.getElementById("widget-container");
+
+    // Initialize Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        isRecording = true;
+        speechStartTime = performance.now();
+        confidenceSum = 0;
+        confidenceCount = 0;
+        finalTranscript = "";
+        
+        btnMic.classList.add("recording");
+        svgMic.style.display = "none";
+        svgStop.style.display = "block";
+        ring1.classList.add("active");
+        ring2.classList.add("active");
+        ring3.classList.add("active");
+
+        statusDisplay.innerText = "Listening... Speak now";
+        statusDisplay.classList.add("recording");
+        transcriptDisplay.innerHTML = '<span class="transcript-placeholder">Listening...</span>';
+        transcriptDisplay.classList.add("active");
+      };
+
+      recognition.onresult = (event) => {
+        let interimTranscript = "";
+        let currentFinal = "";
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const result = event.results[i];
+          if (result.isFinal) {
+            currentFinal += result[0].transcript;
+            if (result[0].confidence > 0) {
+              confidenceSum += result[0].confidence;
+              confidenceCount++;
+            }
+          } else {
+            interimTranscript += result[0].transcript;
+          }
+        }
+
+        if (currentFinal) {
+          finalTranscript += (finalTranscript ? " " : "") + currentFinal;
+        }
+
+        // Render real-time transcript
+        const display = finalTranscript + (interimTranscript ? " " + interimTranscript : "");
+        if (display.trim()) {
+          transcriptDisplay.innerText = display;
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        if (event.error !== 'no-speech') {
+          stopRecording();
+          statusDisplay.innerText = "Error: " + event.error + ". Try clicking again.";
+          statusDisplay.classList.remove("recording");
+        }
+      };
+
+      recognition.onend = () => {
+        if (isRecording) {
+          // If it ended unexpectedly, clean up state
+          stopRecording();
+        }
+      };
+    } else {
+      statusDisplay.innerText = "Speech Recognition not supported in this browser.";
+      btnMic.disabled = true;
+    }
+
+    // Speech Synthesis (TTS) Helper
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Cancel any ongoing speech
+        const cleanText = text.replace(/[*#`_\[\]]/g, ''); // Strip markdown
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        
+        // Find a natural English voice if possible
+        const voices = window.speechSynthesis.getVoices();
+        const engVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Microsoft')));
+        if (engVoice) {
+          utterance.voice = engVoice;
+        }
+        
+        utterance.rate = 0.95; // Slightly slower for absolute clarity
+        utterance.pitch = 1.0;
+        
+        utterance.onstart = () => {
+          statusDisplay.innerText = "Speaking question...";
+        };
+        utterance.onend = () => {
+          statusDisplay.innerText = "Click the microphone to start answering";
+        };
+        
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // Trigger TTS on voiceschanged if voice list was delayed
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        // Voice list loaded
+      };
+    }
+
+    // Toggle Recording
+    micTrigger.onclick = () => {
+      if (!recognition) return;
+      if (isRecording) {
+        stopAndSubmit();
+      } else {
+        startRecording();
+      }
+    };
+
+    btnReplay.onclick = () => {
+      if (question) {
+        speak(question);
+      }
+    };
+
+    function startRecording() {
+      if (recognition) {
+        // Cancel TTS before speaking starts
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        try {
+          recognition.start();
+        } catch (e) {
+          console.error("Recognition start error:", e);
+        }
+      }
+    }
+
+    function stopRecording() {
+      isRecording = false;
+      btnMic.classList.remove("recording");
+      svgMic.style.display = "block";
+      svgStop.style.display = "none";
+      ring1.classList.remove("active");
+      ring2.classList.remove("active");
+      ring3.classList.remove("active");
+      statusDisplay.classList.remove("recording");
+      statusDisplay.innerText = "Click the microphone to start answering";
+    }
+
+    function stopAndSubmit() {
+      if (!recognition) return;
+      recognition.stop();
+      stopRecording();
+
+      const durationMs = performance.now() - speechStartTime;
+      const speakingDuration = Math.max(1, durationMs / 1000); // at least 1s
+
+      const answer = finalTranscript.trim() || transcriptDisplay.innerText.trim();
+      
+      // If answer is still just a placeholder or blank, cancel
+      if (!answer || answer.includes("Your speech transcript") || answer.includes("Listening...")) {
+        transcriptDisplay.innerHTML = '<span class="transcript-placeholder">No speech detected. Please speak and click stop when finished.</span>';
+        return;
+      }
+
+      // Calculate Metrics
+      const wordCount = answer.split(/\s+/).length;
+      const wordsPerMinute = Math.round((wordCount / speakingDuration) * 60);
+      
+      // Speech recognition average confidence
+      const averageConfidence = confidenceCount > 0 ? (confidenceSum / confidenceCount) : 0.95;
+      const speechClarityScore = Math.round(averageConfidence * 100);
+
+      // Filler words tracking
+      const fillerKeywords = ["um", "uh", "like", "so", "actually", "you know", "basically", "literally"];
+      const words = answer.toLowerCase().replace(/[^a-zA-Z\s]/g, "").split(/\s+/);
+      const fillerDetected = [];
+      let fillerWordCount = 0;
+
+      words.forEach(w => {
+        if (fillerKeywords.includes(w)) {
+          fillerWordCount++;
+          if (!fillerDetected.includes(w)) {
+            fillerDetected.push(w);
+          }
+        }
+      });
+
+      // Show processing status
+      statusDisplay.innerText = "Submitting answer and metrics...";
+
+      // Send values back to Streamlit
+      const payload = {
+        answer: answer,
+        metrics: {
+          speaking_duration: Math.round(speakingDuration * 10) / 10,
+          words_per_minute: wordsPerMinute,
+          filler_word_count: fillerWordCount,
+          filler_words_detected: fillerDetected,
+          speech_clarity_score: speechClarityScore
+        }
+      };
+
+      sendToStreamlit(payload);
+    }
+
+    // Communicate with Streamlit parent window
+    function sendToStreamlit(value) {
+      window.parent.postMessage({
+        isStreamlitMessage: true,
+        type: "streamlit:setComponentValue",
+        value: value
+      }, "*");
+    }
+
+    function setFrameHeight() {
+      const height = container.scrollHeight + 32;
+      window.parent.postMessage({
+        isStreamlitMessage: true,
+        type: "streamlit:setFrameHeight",
+        height: height
+      }, "*");
+    }
+
+    // Listen for props updates from Streamlit
+    window.addEventListener("message", (event) => {
+      if (event.data.type === "streamlit:render") {
+        const props = event.data.args;
+        
+        // Handle new question
+        if (props.question && props.question !== question) {
+          question = props.question;
+          
+          // Re-render display placeholder
+          transcriptDisplay.innerHTML = '<span class="transcript-placeholder">Your speech transcript will appear here in real-time...</span>';
+          transcriptDisplay.classList.remove("active");
+          
+          // Speak question automatically if not already spoken in this session
+          if (!spokenQuestions.has(question)) {
+            spokenQuestions.add(question);
+            // Give browser a split second to settle before playing speech
+            setTimeout(() => {
+              speak(question);
+            }, 500);
+          }
+        }
+        
+        // Dynamically adjust height
+        setTimeout(setFrameHeight, 100);
+      }
+    });
+
+    // Initial frame height call
+    window.onload = () => {
+      setTimeout(setFrameHeight, 200);
+      // Tell Streamlit that the component is loaded and ready
+      window.parent.postMessage({
+        isStreamlitMessage: true,
+        type: "streamlit:componentReady",
+        apiVersion: 1
+      }, "*");
+    };
+  </script>
+</body>
+</html>

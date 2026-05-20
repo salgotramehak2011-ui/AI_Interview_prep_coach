@@ -1,0 +1,20 @@
+AI and Machine Learning Interview Preparation Guide
+
+Supervised Learning: Uses labeled data to train models. Common algorithms include linear regression,
+logistic regression, decision trees, random forests, SVM, and neural networks. Key metrics: accuracy,
+precision, recall, F1-score, ROC-AUC.
+
+Unsupervised Learning: Finds patterns in unlabeled data. Includes K-means clustering, hierarchical
+clustering, PCA for dimensionality reduction, and autoencoders.
+
+Deep Learning: Neural networks with multiple layers. CNNs for images, RNNs/LSTMs for sequences,
+Transformers for NLP. Backpropagation and gradient descent are fundamental optimization techniques.
+
+NLP: Tokenization, embeddings (Word2Vec, GloVe, BERT), attention mechanisms, fine-tuning LLMs.
+Tasks include classification, NER, summarization, and question answering.
+
+MLOps: Model versioning, CI/CD for ML, monitoring data drift and model performance, A/B testing,
+feature stores, and reproducible pipelines with MLflow or Kubeflow.
+
+Common Interview Topics: Bias-variance tradeoff, overfitting prevention (regularization, dropout,
+early stopping), cross-validation, hyperparameter tuning, and ethical AI considerations.

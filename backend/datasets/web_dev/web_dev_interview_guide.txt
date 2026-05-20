@@ -1,0 +1,22 @@
+Web Development Interview Preparation Guide
+
+Frontend Fundamentals: HTML semantic structure, CSS flexbox/grid, responsive design, accessibility
+(ARIA), JavaScript ES6+, async/await, DOM manipulation, and browser rendering pipeline.
+
+React Ecosystem: Components, hooks (useState, useEffect, useContext), state management (Redux, Zustand),
+virtual DOM, performance optimization (memo, useMemo), and testing with Jest/React Testing Library.
+
+Backend Development: RESTful API design, HTTP methods and status codes, authentication (JWT, OAuth2),
+session management, input validation, and rate limiting.
+
+Databases: SQL vs NoSQL, indexing, normalization, JOINs, transactions, ACID properties, and ORM usage
+with SQLAlchemy or Prisma.
+
+DevOps & Deployment: Docker containers, CI/CD pipelines, cloud hosting (AWS, Azure), CDN, caching
+strategies, and environment configuration.
+
+Security: OWASP Top 10, XSS, CSRF, SQL injection prevention, HTTPS, CORS, Content Security Policy,
+and secure password hashing (bcrypt, Argon2).
+
+System Design: Load balancing, microservices vs monolith, message queues, caching layers (Redis),
+and scalability patterns for high-traffic web applications.

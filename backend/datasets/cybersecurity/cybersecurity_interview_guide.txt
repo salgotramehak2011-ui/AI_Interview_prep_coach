@@ -1,0 +1,24 @@
+Cybersecurity Interview Preparation Guide
+
+Network Security: TCP/IP stack, firewalls, IDS/IPS, VPNs, network segmentation, DNS security,
+and common protocols (TLS 1.3, SSH, IPSec).
+
+Cryptography: Symmetric vs asymmetric encryption, hashing (SHA-256), digital signatures, PKI,
+certificate authorities, and key management best practices.
+
+Threat Modeling: STRIDE methodology, attack surfaces, vulnerability assessment, penetration testing
+methodologies, and MITRE ATT&CK framework.
+
+Incident Response: Preparation, identification, containment, eradication, recovery, and lessons learned.
+SIEM tools, log analysis, and forensic evidence handling.
+
+Identity & Access: MFA, RBAC, ABAC, zero trust architecture, privileged access management, and
+OAuth/OIDC federation.
+
+Compliance: GDPR, HIPAA, PCI-DSS, SOC 2, and security control frameworks (NIST CSF, ISO 27001).
+
+Application Security: Secure SDLC, SAST/DAST, dependency scanning, API security, secrets management,
+and secure coding practices for OWASP Top 10 vulnerabilities.
+
+Cloud Security: Shared responsibility model, IAM policies, encryption at rest and in transit,
+container security, and cloud-native security tools.
