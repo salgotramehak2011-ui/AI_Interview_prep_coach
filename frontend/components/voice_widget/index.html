@@ -336,17 +336,28 @@
 
       recognition.onerror = (event) => {
         console.error("Speech recognition error:", event.error);
-        if (event.error !== 'no-speech') {
-          stopRecording();
-          statusDisplay.innerText = "Error: " + event.error + ". Try clicking again.";
-          statusDisplay.classList.remove("recording");
+        let errorMessage = "Error: " + event.error + ". Try clicking again.";
+
+        if (event.error === 'network') {
+          errorMessage = "Network error: please ensure you are online and microphone access is allowed.";
+        } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          errorMessage = "Microphone permission denied. Please allow microphone access and try again.";
+        } else if (event.error === 'no-speech') {
+          errorMessage = "No speech detected. Please speak clearly and click stop when finished.";
         }
+
+        stopRecording();
+        statusDisplay.innerText = errorMessage;
+        statusDisplay.classList.remove("recording");
       };
 
       recognition.onend = () => {
         if (isRecording) {
           // If it ended unexpectedly, clean up state
           stopRecording();
+          if (!finalTranscript.trim()) {
+            statusDisplay.innerText = "Listening ended without speech. Click the microphone to try again.";
+          }
         }
       };
     } else {
@@ -411,10 +422,13 @@
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
         }
+
         try {
           recognition.start();
+          statusDisplay.innerText = "Listening... Speak now";
         } catch (e) {
           console.error("Recognition start error:", e);
+          statusDisplay.innerText = "Unable to start speech recognition. Please refresh and try again.";
         }
       }
     }
