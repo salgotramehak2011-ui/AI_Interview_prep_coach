@@ -36,7 +36,7 @@ PAGES = {
 }
 
 with st.sidebar:
-    st.markdown("## 🎯 AI Prep Coach")
+    st.markdown("## 🎯 AI PREP COACH")
     st.markdown("---")
     
     page = st.radio("Navigation", list(PAGES.keys()), label_visibility="collapsed")
@@ -103,3 +103,4 @@ with st.sidebar:
                 st.error(str(exc))
 
 PAGES[page]()
+ 
