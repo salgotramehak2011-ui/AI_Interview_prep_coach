@@ -72,6 +72,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 API docs: http://localhost:8000/docs
 
+
 ### 5. Run frontend
 
 ```bash
